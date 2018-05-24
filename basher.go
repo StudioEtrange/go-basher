@@ -31,29 +31,40 @@ func exitStatus(err error) (int, error) {
 }
 
 // Application sets up a common entrypoint for a Bash application that
-// uses exported Go functions. It uses the DEBUG environment variable
-// to set debug on the Context, and SHELL for the Bash binary if it
-// includes the string "bash". You can pass a loader function to use
-// for the sourced files, and a boolean for whether or not the
-// environment should be copied into the Context process.
+// funcs : exported Go functions.
+// sourcedScripts : some bash scripts to sourced
+// command : bash command to execute -- arg passed on the command line will be passed to the command
+// loaderSourcedScripts : loader for sourced bash file - if nil, will use ioutil.ReadFile - Use 'Asset' for embedded scripts
+// loaderBash : loader for binary bash file - if nil, will try to autodetect binary (by using BASH_PATH or 'which bash') - Use 'RestoreAsset' for embedded bash
+// copyEnv : import current shell env into context
+// It uses the DEBUG environment variable to set debug on the Context,
 func Application(
 	funcs map[string]func([]string),
-	scripts []string,
-	loader func(string) ([]byte, error),
+	sourcedScripts []string,
+	command string,
+	loaderSourcedScripts func(string) ([]byte, error),
+	loaderBash func(string) ([]byte, error),
 	copyEnv bool) {
 
-	bashDir, err := homedir.Expand("~/.basher")
-	if err != nil {
-		log.Fatal(err, "1")
-	}
 
-	bashPath := bashDir + "/bash"
-	if _, err := os.Stat(bashPath); os.IsNotExist(err) {
-		err = RestoreAsset(bashDir, "bash")
+	if loaderBash != nil {
+		bashDir, err := homedir.Expand("~/.basher")
 		if err != nil {
 			log.Fatal(err, "1")
 		}
+
+		bashPath := bashDir + "/bash"
+		if _, err := os.Stat(bashPath); os.IsNotExist(err) {
+			err = loaderBash(bashDir, "bash")
+			if err != nil {
+				log.Fatal(err, "1")
+			}
+		}
+	} else {
+		bashPath := findSystemBashPath()
 	}
+
+
 	bash, err := NewContext(bashPath, os.Getenv("DEBUG") != "")
 	if err != nil {
 		log.Fatal(err)
@@ -65,17 +76,33 @@ func Application(
 		os.Exit(0)
 	}
 
-	for _, script := range scripts {
-		bash.Source(script, loader)
+	for _, script := range sourcedScripts {
+		bash.Source(script, loaderSourcedScripts)
 	}
 	if copyEnv {
 		bash.CopyEnv()
 	}
-	status, err := bash.Run("main", os.Args[1:])
+	status, err := bash.Run(command, os.Args[1:])
 	if err != nil {
 		log.Fatal(err)
 	}
 	os.Exit(status)
+}
+
+// determine where is bash in the current system
+// use BASH_PATH env var to force bash path
+// or use 'which bash' to locate bash on system
+func findSystemBashPath() {
+	bashPath := nil
+	if os.Getenv("BASH_PATH") != nil && os.Getenv("BASH_PATH") != "" {
+		bashPath := os.Getenv("BASH_PATH")
+	} else {
+		output, err := exec.Command("which", "bash").CombinedOutput()
+		if err == nil {
+			bashPath := string(output)
+		}
+	}
+	return bashPath
 }
 
 // A Context is an instance of a Bash interpreter and environment, including

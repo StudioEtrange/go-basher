@@ -1,3 +1,8 @@
 example/example
+example2/example
 .bin
 .bash
+cache/
+.DS_Store
+workspace/*
+!workspace/.keep

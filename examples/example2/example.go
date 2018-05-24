@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/dustin/go-jsonpointer"
-	"github.com/progrium/go-basher"
+	"github.com/studioetrange/go-basher"
 )
 
 func assert(err error) {
@@ -39,15 +39,18 @@ func reverse(args []string) {
 }
 
 func main() {
-	bash, _ := basher.NewContext("/bin/bash", false)
-	bash.ExportFunc("json-pointer", jsonPointer)
-	bash.ExportFunc("reverse", reverse)
-	if bash.HandleFuncs(os.Args) {
-		os.Exit(0)
-	}
 
-	bash.Source("bash/example.bash", Asset)
-	status, err := bash.Run("main", os.Args[1:])
-	assert(err)
-	os.Exit(status)
+	basher.Application(
+		map[string]func([]string){
+			"reverse":      reverse,
+			"jsonPointer":	jsonPointer,
+		}, []string{
+			"bash/example.bash",
+		},
+		"main"
+		Asset,
+		nil,
+		true,
+	)
+
 }

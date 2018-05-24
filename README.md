@@ -1,8 +1,18 @@
 # go-basher
 
-A Go library for creating Bash environments, exporting Go functions in them as Bash functions, and running commands in that Bash environment. Combined with a tool like [go-bindata](https://github.com/jteeuwen/go-bindata), you can write programs that are part written in Go and part written in Bash that can be distributed as standalone binaries.
+A Go library for creating Bash environments, exporting Go functions in them as Bash functions, and running commands in that Bash environment. Combined with a tool like [go-bindata](https://github.com/puppetlabs/go-bindata), you can write programs that are part written in Go and part written in Bash that can be distributed as standalone binaries.
 
-[![Circle CI](https://circleci.com/gh/progrium/go-basher.svg?style=shield)](https://circleci.com/gh/progrium/go-basher) [![GoDoc](https://godoc.org/github.com/progrium/go-basher?status.svg)](http://godoc.org/github.com/progrium/go-basher)
+ [![GoDoc](https://godoc.org/github.com/progrium/go-basher?status.svg)](http://godoc.org/github.com/progrium/go-basher)
+
+## Note on this fork
+
+* Add autofind bash binary already present on system
+* Extend Application helper to use embedded Bash or not
+* Extend Application helper to launch a specific command
+* Add a new example with Application helper
+* Remove useless binary files
+* Choice when embedding bash for linux version or macos version
+* Swith to go-bindata repo https://github.com/puppetlabs/go-bindata
 
 ## Using go-basher
 
@@ -56,9 +66,16 @@ main() {
 }
 ```
 
+
+### Alternative
+
+Instead of using NewContext, ExportFunc and HandleFuncs, and Run or Source functions, you can use Application which is a helper built upon theses functions.
+
+See example2
+
 ## Using go-basher with go-bindata
 
-You can bundle your Bash scripts into your Go binary using [go-bindata](https://github.com/jteeuwen/go-bindata). First install go-bindata:
+You can bundle your Bash scripts into your Go binary using [go-bindata](https://github.com/puppetlabs/go-bindata). First install go-bindata:
 
 	$ go get github.com/jteeuwen/go-bindata/...
 
@@ -68,7 +85,7 @@ Now put all your Bash scripts in a directory called `bash`. The above example pr
 
 This will produce a `bindata.go` file that includes all of your Bash scripts.
 
-> `bindata.go` includes a function called `Asset` that behaves like `ioutil.ReadFile` for files in your `bindata.go`. 
+> `bindata.go` includes a function called `Asset` that behaves like `ioutil.ReadFile` for files in your `bindata.go`.
 
 Here's how you embed it into the above example program:
 
@@ -83,20 +100,52 @@ Here's how you embed it into the above example program:
 		}, []string{
 			"bash/main.bash",
 		},
+		"main"
 		Asset,
+		RestoreAsset,
 		true,
 	)
 ```
+
+
 
 ## Batteries included, but replaceable
 
 Did you already hear that term? Sometimes Bash binary is missing, for example when using alpine linux or busybox. Or sometimes its not the correct version. Like OSX ships with Bash 3.x which misses a lot of usefull features. Or you want to make sure to avoid shellshock attack.
 
-For those reasons static versions of Bash binaries are included for linux and darwin. Statically compiled bash-4.3.30 is released on github: https://github.com/robxu9/bash-static. These are then turned into go code, with go-bindata: bindata_linux.go and bindata_darwin.go.
+For those reasons static versions of Bash binaries are included for linux and darwin. Statically compiled bash are released on github: https://github.com/robxu9/bash-static. These are then turned into go code, with go-bindata: bindata_linux.go and bindata_darwin.go.
 
-When you use the `basher.Application()` function, the built in Bash binary will be extracted into the `~/.basher/` dir.
+When you use the `basher.Application()` function, you could use `RestoreAsset` as `loaderBash` parameter so that the built in Bash binary will be extracted into the `~/.basher/` dir.
 
 When you use the `basher.NewContext()` function, you have to specify the path to Bash.
+
+
+## go-basher dependencies
+go-basher stores its dependencies under vendor/, which Go 1.6+ will automatically recognize and load. We use `govendor` to manage the vendored dependencies.
+
+**To install govendor do :**
+
+`go get -u github.com/kardianos/govendor`
+
+### Adding a dependency
+If you're adding a dependency, you'll need to vendor it
+
+**To add a dependency:**
+
+* Add the new package to your GOPATH:
+
+	`go get github.com/foo/my-dependency`
+
+* Add the new package to your vendor/ directory:
+
+	`govendor add github.com/hashicorp/my-project/package`
+
+
+### Updating a dependency
+**To update a dependency, fetch the dependency:**
+
+`govendor fetch github.com/foo/my-dependency`
+
 
 ## Motivation
 
