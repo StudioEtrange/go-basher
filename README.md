@@ -7,17 +7,25 @@ A Go library for creating Bash environments, exporting Go functions in them as B
 ## Note on this fork by StudioEtrange
 
 * Add autofind bash binary already present on system
-* Extend Application helper to use embedded Bash or not
-* Extend Application helper to launch a specific command
+* Extend `Application` helper to use embedded Bash or not
+* Extend `Application` helper to launch a specific command (instead of a fixed command)
 * Add a new examples with Application helper with or without embedded bash
-* Remove useless binary bash files
-* Create a helper script to download and generate a go package with a specific bash static version
-* Switch to go-bindata repo https://github.com/puppetlabs/go-bindata
-* Vendorize dependencies
+* Add a new examples with cross-compilation
+* Remove useless binary bash files from github repository
+* Create a helper script `bash_binaries.sh` to download and generate a go package with a specific bash static version
+* Switch repo of [go-bindata](https://github.com/puppetlabs/go-bindata) to https://github.com/puppetlabs/go-bindata
 * Improved README.md
 * Improved go-basher itself dev env
 
-## Using go-basher
+## Quicktart by examples
+
+* Example using go-basher core functions and embedded scripts see [example1](examples/example1)
+* Example using go-basher Application helper and embedded scripts see [example2](examples/example2)
+* Example using go-basher `Application` helper, embedded scripts AND embedded bash binary see [example3](examples/example3)
+
+* Example using go-basher `Application` helper, embedded scripts, embedded bash binary with cross-compilation see [example4](examples/example4)
+
+## Using go-basher core functions
 
 Here we have a simple Go program that defines a `reverse` function, creates a Bash environment sourcing `main.bash` and then runs `main` in that environment.
 
@@ -70,17 +78,16 @@ main() {
 ```
 
 
-
-### Alternative
+### go-basher core functions vs Application helper
 
 Instead of manipulating `NewContext`, `ExportFunc`/`HandleFuncs` and `Run`/`Source` functions, you can use `Application` which is a helper built upon theses functions.
 
-
-## Embedded scripts : go-basher use
+## Embedded scripts : How to use
 
 You can bundle your Bash scripts into your Go binary using [go-bindata](https://github.com/puppetlabs/go-bindata), as a `data` go package
 
-See full examples in examples/example1 and examples/example2
+* For full example using go-basher core functions and embedded scripts see [example1](examples/example1)
+* For full example using go-basher `Application` helper and embedded scripts see [example2](examples/example2)
 
 ## Embedded scripts : more explanation
 
@@ -128,22 +135,26 @@ When you use the `basher.Application()` function, you have to use a function gen
 
 An help script is provided `scripts/bash_binaries.sh` to download a specific bash version and generate a go package `staticbash`
 
-See full examples in examples/example3
+* For full example using go-basher `Application` helper, embedded scripts AND embedded bash binary see [example3](examples/example3)
 
-## Working on go-basher sources
+## Working on go-basher code source
 
 If you wish to work on go-basher itself, you'll first need Go installed on your machine (version 1.9+ is required).
 
 see https://golang.org/
 
 
-### Install development env - With Makefile
+### Install development env
 
-NOTE : When using Makefile, it will take care of GOPATH tree organization by creating correct symbolic link. So you can just clone this project anywhere. And not in any particular folder or GOPATH folder.
+You need to have gnu make.
+
+NOTE : When using Makefile, it will take care of `GOPATH` variable and tree folders organization by creating correct symbolic link. So you can just clone this project anywhere. And not in any particular folder nor any specific `GOPATH` folder.
+
 
 **Init steps**
 * Clone code
 ```
+cd $HOME
 git clone https://github.com/StudioEtrange/go-basher
 ```
 * Workdir
