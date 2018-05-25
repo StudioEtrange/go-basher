@@ -11,7 +11,6 @@ import (
 	"strings"
 	"sync"
 	"syscall"
-
 	"github.com/kardianos/osext"
 	"github.com/mitchellh/go-homedir"
 )
@@ -43,9 +42,10 @@ func Application(
 	sourcedScripts []string,
 	command string,
 	loaderSourcedScripts func(string) ([]byte, error),
-	loaderBash func(string) ([]byte, error),
+	loaderBash func(string, string) error,
 	copyEnv bool) {
 
+	var bashPath string
 
 	if loaderBash != nil {
 		bashDir, err := homedir.Expand("~/.basher")
@@ -53,7 +53,7 @@ func Application(
 			log.Fatal(err, "1")
 		}
 
-		bashPath := bashDir + "/bash"
+		bashPath = bashDir + "/bash"
 		if _, err := os.Stat(bashPath); os.IsNotExist(err) {
 			err = loaderBash(bashDir, "bash")
 			if err != nil {
@@ -61,7 +61,7 @@ func Application(
 			}
 		}
 	} else {
-		bashPath := findSystemBashPath()
+		bashPath = findSystemBashPath()
 	}
 
 
@@ -92,17 +92,17 @@ func Application(
 // determine where is bash in the current system
 // use BASH_PATH env var to force bash path
 // or use 'which bash' to locate bash on system
-func findSystemBashPath() {
-	bashPath := nil
-	if os.Getenv("BASH_PATH") != nil && os.Getenv("BASH_PATH") != "" {
-		bashPath := os.Getenv("BASH_PATH")
+func findSystemBashPath() string {
+	var bashPath string
+	if os.Getenv("BASH_PATH") != "" {
+		bashPath = os.Getenv("BASH_PATH")
 	} else {
 		output, err := exec.Command("which", "bash").CombinedOutput()
 		if err == nil {
-			bashPath := string(output)
+			bashPath = string(output)
 		}
 	}
-	return bashPath
+	return strings.TrimSpace(bashPath)
 }
 
 // A Context is an instance of a Bash interpreter and environment, including
@@ -264,12 +264,16 @@ func (c *Context) Run(command string, args []string) (int, error) {
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals)
 
+
 	cmd := exec.Command(c.BashPath, "-c", command+argstring)
 	cmd.Env = []string{"BASH_ENV=" + envfile}
 	cmd.Stdin = c.Stdin
 	cmd.Stdout = c.Stdout
 	cmd.Stderr = c.Stderr
-	cmd.Start()
+	//cmd.Start()
+	if err2 := cmd.Start(); err2 != nil {
+		return 0, err2
+	}
 	go func() {
 		for sig := range signals {
 			cmd.Process.Signal(sig)

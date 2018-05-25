@@ -7,6 +7,8 @@ import (
 	"os"
 	"strings"
 
+	"github.com/studioetrange/go-basher/examples/example1/pkg/data"
+
 	"github.com/dustin/go-jsonpointer"
 	"github.com/studioetrange/go-basher"
 )
@@ -46,7 +48,7 @@ func main() {
 		os.Exit(0)
 	}
 
-	bash.Source("bash/example.bash", Asset)
+	bash.Source("bashfiles/example.bash", data.Asset)
 	status, err := bash.Run("main", os.Args[1:])
 	assert(err)
 	os.Exit(status)

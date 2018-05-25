@@ -7,6 +7,8 @@ import (
 	"os"
 	"strings"
 
+	"github.com/studioetrange/go-basher/examples/example2/pkg/data"
+
 	"github.com/dustin/go-jsonpointer"
 	"github.com/studioetrange/go-basher"
 )
@@ -43,14 +45,14 @@ func main() {
 	basher.Application(
 		map[string]func([]string){
 			"reverse":      reverse,
-			"jsonPointer":	jsonPointer,
+			"json-pointer":	jsonPointer,
 		}, []string{
-			"bash/example.bash",
+			"bashfiles/example.bash",
 		},
-		"main"
-		Asset,
+		"main",
+		data.Asset,
 		nil,
-		true,
+		false,
 	)
 
 }

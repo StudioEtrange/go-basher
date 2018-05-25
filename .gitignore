@@ -1,8 +1,13 @@
-example/example
-example2/example
-.bin
-.bash
+bin/
+src/
+/pkg/
 cache/
 .DS_Store
 workspace/*
 !workspace/.keep
+bindata.go
+bash_linux.go
+bash_darwin.go
+examples/example1/example1
+examples/example2/example2
+examples/example3/example3

@@ -1,11 +1,18 @@
 # Example 2
 
 
-Use Core functions to
-* Sourced bash file "bash/example.bash"
+Use go-basher core functions to
+* Sourced bash file `scripts/bashfiles/example.bash` which is embedded with go-bindata
 * Use specific bash binary
-* Export 2 go functions into bash context "reverse", "jsonPointer"
-* Run bash function "main"
+* Export 2 go functions into bash context `reverse`, `jsonPointer`
+* Run bash function `main`
+
+As first step, go-bindata is used to embed folder `scripts/bashfiles` folder, with command
+
+```
+go-bindata -pkg=data -o=pkg/data/bindata.go -prefix=scripts scripts/bashfiles
+```
+Which generate go code into pkg/data, as a `data` package which can be used like this :
 
 
 ```Go
@@ -16,7 +23,7 @@ if bash.HandleFuncs(os.Args) {
 	os.Exit(0)
 }
 
-bash.Source("bash/example.bash", Asset)
+bash.Source("bashfiles/example.bash", data.Asset)
 status, err := bash.Run("main", os.Args[1:])
 assert(err)
 os.Exit(status)
