@@ -1,4 +1,4 @@
-# Example 2
+# Example 3
 
 
 Use go-basher Application Helper function to
@@ -11,7 +11,7 @@ Use go-basher Application Helper function to
 As first step, go-bindata is used to embed folder `scripts/bashfiles` folder, with command
 
 ```
-go-bindata -pkg=bash -o=pkg/bash/bindata.go -prefix=scripts scripts/bashfiles
+go-bindata -pkg=data -o=pkg/data/bindata.go -prefix=scripts scripts/bashfiles
 ```
 
 and to embed static bash binary, using `scripts/bash_binaries.sh` script

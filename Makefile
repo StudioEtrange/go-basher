@@ -26,13 +26,16 @@ build:
 install: tree deps tools build
 	go install $(REPO_PATH)
 
-example-all: example1 example2 example3
+example-all: example1 example2 example3 example4
 
-example1:
+example1: tree
 	$(MAKE) -f $(ROOT_DIR)src/$(REPO_PATH)/examples/example1/Makefile
 
-example2:
+example2: tree
 	$(MAKE) -f $(ROOT_DIR)src/$(REPO_PATH)/examples/example2/Makefile
 
-example3:
+example3: tree
 	$(MAKE) -f $(ROOT_DIR)src/$(REPO_PATH)/examples/example3/Makefile
+
+example4: tree
+	$(MAKE) -f $(ROOT_DIR)src/$(REPO_PATH)/examples/example4/Makefile
