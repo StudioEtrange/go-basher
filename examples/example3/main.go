@@ -49,6 +49,7 @@ func main() {
 			"reverse":      reverse,
 			"json-pointer":	jsonPointer,
 		}, []string{
+			"bashfiles/functions.bash",
 			"bashfiles/example.bash",
 		},
 		"main",

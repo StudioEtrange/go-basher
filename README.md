@@ -19,15 +19,15 @@ A Go library for creating Bash environments, exporting Go functions in them as B
 
 ## Quicktart by examples
 
-* Example using go-basher core functions and embedded scripts see [example1](examples/example1)
-* Example using go-basher Application helper and embedded scripts see [example2](examples/example2)
-* Example using go-basher `Application` helper, embedded scripts AND embedded bash binary see [example3](examples/example3)
+* Example using go-basher core functions and one embedded scripts see [example1](examples/example1)
+* Example using go-basher Application helper and one embedded scripts see [example2](examples/example2)
+* Example using go-basher `Application` helper, two embedded scripts AND embedded bash binary see [example3](examples/example3)
 
-* Example using go-basher `Application` helper, embedded scripts, embedded bash binary with cross-compilation see [example4](examples/example4)
+* Example using go-basher `Application` helper, two embedded scripts, embedded bash binary with cross-compilation see [example4](examples/example4)
 
 ## Using go-basher core functions
 
-Here we have a simple Go program that defines a `reverse` function, creates a Bash environment sourcing `main.bash` and then runs `main` in that environment.
+Here we have a simple Go program that defines a `reverse` go function, creates a Bash environment sourcing `example.bash` and then runs `main` bash function in that environment.
 
 ```Go
 package main
@@ -60,7 +60,7 @@ func main() {
 		os.Exit(0)
 	}
 
-	bash.Source("main.bash", nil)
+	bash.Source("example.bash", nil)
 	status, err := bash.Run("main", os.Args[1:])
 	if err != nil {
 		log.Fatal(err)
@@ -69,7 +69,7 @@ func main() {
 }
 ```
 
-Here is our `main.bash` file, the actual heart of the program:
+Here is our `example.bash` file, the actual heart of the program:
 
 ```bash
 main() {
@@ -95,7 +95,7 @@ You can bundle your Bash scripts into your Go binary using [go-bindata](https://
 
 `go get github.com/puppetlabs/go-bindata/...`
 
-Now put all your Bash scripts in a directory called `bashfiles`. The above example program would mean you'd have a `bash/main.bash` file. Run `go-bindata` on the directory:
+Now put all your Bash scripts in a directory called `bashfiles`. The above example program would mean you'd have a `bash/example.bash` file. Run `go-bindata` on the directory:
 
 `go-bindata bashfiles`
 
@@ -106,15 +106,15 @@ This will produce a `bindata.go` file that includes all of your Bash scripts.
 Here's how you embed it into the previous example program :
 
 * copy/paste it's import-statements and functions to your application code
-* method A: change `bash.Source("bash/main.bash", nil)` into `bash.Source("bash/main.bash, Asset)`
-* method B: replace all code in the `main()`-function with the `Application()`-helper function (see below)
+* method A : change `bash.Source("bash/example.bash", nil)` into `bash.Source("bash/example.bash, Asset)`
+* method B : replace all code in the `main()` function with the `Application()` helper function (see below)
 
 ```Go
 	basher.Application(
 		map[string]func([]string){
 			"reverse":      reverse,
 		}, []string{
-			"bash/main.bash",
+			"bash/example.bash",
 		},
 		"main"
 		Asset,
@@ -139,13 +139,14 @@ An help script is provided `scripts/bash_binaries.sh` to download a specific bas
 
 ## Working on go-basher code source
 
-If you wish to work on go-basher itself, you'll first need Go installed on your machine (version 1.9+ is required).
+If you wish to work on go-basher itself, **you'll first need Go installed** on your machine (version 1.9+ is required).
 
 see https://golang.org/
 
 
 ### Install development env
 
+You need to have Go (version 1.9+ is required).
 You need to have gnu make.
 
 NOTE : When using Makefile, it will take care of `GOPATH` variable and tree folders organization by creating correct symbolic link. So you can just clone this project anywhere. And not in any particular folder nor any specific `GOPATH` folder.
@@ -193,7 +194,11 @@ make install
 ```
 make example-all
 ```
-*launch example N :*
+Or *build example N with :*
+```
+make exampleN
+```
+Then *launch example N :*
 ```
 exampleN
 ```

@@ -3,8 +3,7 @@
 
 Use go-basher Application Helper function to
 * Embed static bash binaries
-* Sourced bash file `scripts/bashfiles/example.bash` which is embedded with go-bindata
-* Use autodetected bash binary of the current system
+* Source two bash files `scripts/bashfiles/functions.bash` and `scripts/bashfiles/example.bash` which are embedded with go-bindata
 * Export 2 go functions into bash context `reverse`, `jsonPointer`
 * Run bash function `main`
 
@@ -16,7 +15,7 @@ go-bindata -pkg=data -o=pkg/data/bindata.go -prefix=scripts scripts/bashfiles
 
 and to embed static bash binary, using `scripts/bash_binaries.sh` script
 
-Which generate go code into pkg/data as a `data` package and pkg/staticbash  as a `staticbash` pacakge which can be used like this :
+Which generate go code into pkg/data as a `data` package and pkg/staticbash  as a `staticbash` package which can be used like this :
 
 
 
@@ -26,6 +25,7 @@ basher.Application(
 		"reverse":      reverse,
 		"json-pointer":	jsonPointer,
 	}, []string{
+		"bashfiles/functions.bash",
 		"bashfiles/example.bash",
 	},
 	"main"

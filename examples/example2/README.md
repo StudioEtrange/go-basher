@@ -2,7 +2,7 @@
 
 
 Use go-basher Application Helper function to
-* Sourced bash file `scripts/bashfiles/example.bash` which is embedded with go-bindata
+* Source one bash file `scripts/bashfiles/example.bash` which is embedded with go-bindata
 * Use autodetected bash binary of the current system
 * Export 2 go functions into bash context `reverse`, `jsonPointer`
 * Run bash function `main`

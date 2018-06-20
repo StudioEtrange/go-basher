@@ -2,8 +2,8 @@
 
 
 Use go-basher core functions to
-* Sourced bash file `scripts/bashfiles/example.bash` which is embedded with go-bindata
-* Use specific bash binary
+* Source one bash file `scripts/bashfiles/example.bash` which is embedded with go-bindata
+* Use specific bash binary on the host (i.e `/bin/bash`)
 * Export 2 go functions into bash context `reverse`, `jsonPointer`
 * Run bash function `main`
 

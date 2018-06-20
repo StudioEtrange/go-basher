@@ -1,8 +1,5 @@
 set -eo pipefail
 
-hello-bash() {
-	echo "Hello world from Bash"
-}
 
 main() {
 	echo "Arguments:" "$@"
